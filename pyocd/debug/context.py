@@ -15,9 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Union, TypeVar
+
+from ..core.core_target import CoreTarget
 from ..core.memory_interface import MemoryInterface
 from ..coresight.component import CoreSightCoreComponent
 from ..coresight.cortex_m_core_registers import CortexMCoreRegisterInfo
+
+Self = TypeVar("Self", bound="DebugContext")
 
 class DebugContext(MemoryInterface):
     """@brief Viewport for inspecting the system being debugged.
@@ -36,26 +41,26 @@ class DebugContext(MemoryInterface):
     to the core.
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent: Union[CoreTarget, Self]):
         """@brief Debug context constructor.
 
         @param self
-        @param parent The parent of this context. Can be either a core (CoreSightCoreComponent) or
+        @param parent The parent of this context. Can be either a core (CoreTarget) or
             another DebugContext instance.
         """
         self._parent = parent
 
-        if isinstance(self._parent, CoreSightCoreComponent):
+        if isinstance(self._parent, CoreTarget):
             self._core = parent
         else:
             self._core = parent.core
 
     @property
-    def parent(self):
+    def parent(self) -> Union[CoreTarget, Self]:
         return self._parent
 
     @property
-    def core(self):
+    def core(self) -> CoreTarget:
         return self._core
 
     @property

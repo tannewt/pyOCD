@@ -124,6 +124,7 @@ from . import target_MPS3_AN540
 from . import target_RP2040
 from . import target_ytm32b1ld0
 from . import target_ytm32b1me0
+from . import target_sim_spike
 
 ## @brief Dictionary of all builtin targets.
 #
@@ -285,4 +286,5 @@ BUILTIN_TARGETS = {
           'rp2040_core1' : target_RP2040.RP2040Core1,
           'ytm32b1ld0': target_ytm32b1ld0.YTM32B1LD0,
           'ytm32b1me0': target_ytm32b1me0.YTM32B1ME0,
+          'spike': target_sim_spike.Spike,
          }

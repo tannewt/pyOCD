@@ -300,6 +300,7 @@ class DebugPort:
         self.aps: Dict["APAddressBase", "AccessPort"] = {}
         self._access_number: int = 0
         self._cached_dp_select: Optional[int] = None
+        self._clearing_error: bool = False
         self._protocol: Optional[DebugProbe.Protocol] = None
         self._probe_managed_ap_select: bool = False
         self._probe_managed_dpbanksel: bool = False
@@ -975,13 +976,18 @@ class DebugPort:
     def clear_sticky_err(self) -> None:
         self._invalidate_cache()
         mode = self.probe.wire_protocol
+        if not self._clearing_error:
+            self._clearing_error = True
+        else:
+            return
         if mode == DebugProbe.Protocol.SWD:
             self.write_reg(DP_ABORT, ABORT_ORUNERRCLR | ABORT_WDERRCLR | ABORT_STKERRCLR | ABORT_STKCMPCLR)
         elif mode == DebugProbe.Protocol.JTAG:
             self.write_reg(DP_CTRL_STAT, CSYSPWRUPREQ | CDBGPWRUPREQ | TRNNORMAL | MASKLANE
-                    | CTRLSTAT_STICKYERR | CTRLSTAT_STICKYCMP | CTRLSTAT_STICKYORUN)
+                        | CTRLSTAT_STICKYERR | CTRLSTAT_STICKYCMP | CTRLSTAT_STICKYORUN)
         else:
             assert False
+        self._clearing_error = False
 
 class APAccessMemoryInterface(memory_interface.MemoryInterface):
     """@brief Memory interface for performing simple APACC transactions.
